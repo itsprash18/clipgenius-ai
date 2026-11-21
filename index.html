@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ClipGenius AI</title>
+<style>
+body {
+  background: #10111b;
+  color: white;
+  font-family: Arial, sans-serif;
+  padding: 25px;
+  text-align: center;
+}
+h1 { color: #a78bfa; }
+.card {
+  background: #202235;
+  padding: 22px;
+  border-radius: 16px;
+  max-width: 500px;
+  margin: 30px auto;
+}
+input {
+  width: 90%;
+  padding: 14px;
+  border-radius: 8px;
+  border: none;
+  margin: 15px 0;
+}
+button {
+  background: #8b5cf6;
+  color: white;
+  padding: 14px 25px;
+  border: none;
+  border-radius: 8px;
+  font-weight: bold;
+}
+#result { margin-top: 20px; }
+</style>
+</head>
+<body>
+<h1>✂ ClipGenius AI</h1>
+<p>Turn long videos into short clips with AI.</p>
+
+<div class="card">
+  <h2>Start clipping</h2>
+  <input id="url" placeholder="Paste YouTube video URL">
+  <br>
+  <button onclick="processVideo()">Analyse Video</button>
+  <div id="result"></div>
+</div>
+
+<script>
+function processVideo() {
+  const url = document.getElementById("url").value.trim();
+  const result = document.getElementById("result");
+  let id = null;
+
+  try {
+    const u = new URL(url);
+    if (u.hostname === "youtu.be") {
+      id = u.pathname.slice(1).split("/")[0];
+    } else if (u.hostname.endsWith("youtube.com")) {
+      id = u.searchParams.get("v");
+      if (!id) {
+        const parts = u.pathname.split("/");
+        if (["shorts", "embed", "live"].includes(parts[1])) {
+          id = parts[2];
+        }
+      }
+    }
+  } catch(e) {}
+
+  if (!id || !/^[\w-]{11}$/.test(id)) {
+    result.textContent = "Please enter a valid YouTube link.";
+    return;
+  }
+
+  result.innerHTML = `
+    <h3>Video detected!</h3>
+    <iframe width="100%" height="220"
+      src="https://www.youtube.com/embed/${id}"
+      allowfullscreen></iframe>
+    <p>Ready for AI analysis in our next version.</p>
+  `;
+}
+</script>
+</body>
+</html>
